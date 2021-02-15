@@ -41,5 +41,39 @@ impl<T> RingBuffer<T> {
         }
         return value;
     }
+
+    pub fn capacity(&self) -> usize {
+        self.data.len()
+    }
+
+    pub fn len(&self) -> usize {
+        self.size
+    }
 }
 
+pub struct IntoIter<T> {
+    rb: RingBuffer<T>
+}
+
+impl<T> Iterator for IntoIter<T> {
+    type Item = T;
+
+    fn next(&mut self) -> Option<Self::Item> {
+        self.rb.pop()
+    }
+
+    fn size_hint(&self) -> (usize, Option<usize>) {
+        (self.rb.len(), Some(self.rb.len()))
+    }
+}
+
+impl<T> IntoIterator for RingBuffer<T> {
+    type Item = T;
+    type IntoIter = IntoIter<T>;
+
+    fn into_iter(self) -> Self::IntoIter {
+        IntoIter {
+            rb: self
+        }
+    }
+}
