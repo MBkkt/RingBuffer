@@ -7,18 +7,16 @@ use std::{
 pub struct RingBuffer<T> {
     data: Vec<Option<T>>,
     begin: usize,
-    end: usize,
     size: usize,
 }
 
 impl<T> RingBuffer<T> {
     pub fn new() -> RingBuffer<T> {
-        RingBuffer { data: Vec::new(), begin: 0, end: 0, size: 0 }
+        RingBuffer { data: Vec::new(), begin: 0, size: 0 }
     }
 
     pub fn with_capacity(&mut self, n: usize) {
         self.begin = 0;
-        self.end = 0;
         self.size = 0;
         self.data.resize_with(n, Option::default);
     }
@@ -28,8 +26,7 @@ impl<T> RingBuffer<T> {
         if self.size == len {
             return false;
         }
-        self.data[self.end] = Some(value);
-        self.end = (self.end + 1) % len;
+        self.data[(self.begin + self.size) % len] = Some(value);
         self.size += 1;
         return true;
     }
